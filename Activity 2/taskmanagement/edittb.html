@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>Task Management</title>
+    <link rel="stylesheet" href="./public/bootstrap.min.css">
+    <script src="./public/jquery-3.3.1.slim.min.js"></script>
+    <script src="./public/popper.min.js"></script>
+    <script src="./public/bootstrap.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <a class="navbar-brand" href="/">Task Management</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav"></div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Edit TaskBoard</h3>
+                <hr>
+                <form action="/edittb" method="post">
+                    <div class="form-group">
+                        <label for="">Title</label>
+                        <input type="text" name="title" value="{{my_tb.title}}" class="form-control">
+
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" name="id" value="{{my_tb.key.id()}}">
+                        <input type="submit" name="submit" value="Update" class="btn btn-success"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

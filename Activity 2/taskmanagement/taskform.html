@@ -1,0 +1,73 @@
+<html>
+<head>
+    <title>Task Management</title>
+    <link rel="stylesheet" href="./public/bootstrap.min.css">
+    <script src="./public/jquery-3.3.1.slim.min.js"></script>
+    <script src="./public/popper.min.js"></script>
+    <script src="./public/bootstrap.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <a class="navbar-brand" href="/">Task Management</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav"></div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>{%if task.key%}Edit{%else%}Add{%endif%} Task</h3>
+                <hr>
+                <form action="/addtask" method="post">
+
+                    <div class="form-group">
+                        <label for="">Title</label>
+                        <input required type="text" name="title" value="{%if task.key%}{{task.title}}{%endif%}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Due Date</label>
+                        <input  class="form-control" required type="date" name="due_date" value="{%if task.due_date and task.key%}{{task.due_date.strftime('%Y-%m-%d')}}{%endif%}">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Assign User</label>
+                        <select name="uid" required class="form-control">
+                            <option value="">Select</option>
+                            {%for tb_user in tb_users %}
+                                <option value="{{tb_user.key.id()}}"
+                                    {%if task.assigned_user and task.key and tb_user.key.id() == task.assigned_user.id()%}
+                                        selected
+                                    {%endif%}
+                                >{{tb_user.email}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                      {%if task.key%}
+                        <label for="">Completed</label>
+                        <select name="completed" class="form-control">
+                            <option value="1" {%if task.completed%}selected{%endif%}>Completed</option>
+                            <option value="0" {%if not task.completed%}selected{%endif%}>Incomplete</option>
+                        </select>
+                      {%endif%}
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" name="id" value="{{my_tb.key.id()}}">
+                        {%if task.key%}
+                        <input type="hidden" name="tid" value="{{task.key.id()}}">
+                        <input type="submit" name="submit" value="Update Task" class="btn btn-success"/>
+                        {%else%}
+                        <input type="submit" name="submit" value="Save Task" class="btn btn-success"/>
+                        {%endif%}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

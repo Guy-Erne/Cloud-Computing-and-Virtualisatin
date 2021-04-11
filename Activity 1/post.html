@@ -1,0 +1,182 @@
+<html>
+<head>
+    <title>Insta</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script>
+        $(function(){
+            $("#search-input").on("keyup", function(){
+                $.ajax({
+                    url:"/search",
+                    method:"GET",
+                    dataType:"json",
+                    data:{"q": $(this).val()},
+                    beforeSend:function(){
+                        $("#search-results").html("")
+                    },
+                    success:function(response){
+                        $("#search-results").hide()
+                        if(response.length){
+                            response.forEach(function(account){
+                            $("#search-results").append("<li><a href='/profile/"+account.id+"'>"+account.email+"</a></li>")
+                            })
+                            $("#search-results").show()
+                        }
+                    }
+                })
+            });
+        })
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">
+                Insta
+            </a>
+        </div>
+        <div class="navbar-form navbar-left">
+            <div class="form-group" style="position:relative">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="search-input" placeholder="Search" style="width:500px;">
+                  <span class="input-group-addon btn btn-default">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                  </span>
+                </div><!-- /input-group -->
+                <ul class="dropdown-menu" id="search-results" style="width:540px;"></ul>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{{log_url}}" class="na">{%if user %}Logout {%else%}Login {%endif%}</a></li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+<div class="container" style="margin-top:100px;">
+    <div class="row">
+        <div class="col-xs-2"></div>
+        <div class="col-xs-3">
+            <div class="my_info thumbnail">
+                <div class="profile-image">
+                    <img src="/static/default-user-image.png" alt="" class="img-circle"
+                         style="width:200px;display:block; margin:0 auto;">
+                </div>
+
+                <div class="profile-info caption">
+                    <h3 class="text-center"><a href="/profile/{{user.key.id()}}">{{profile_user.email}}</a></h3>
+                    <p class="text-center">Following <a href="/profile/{{profile_user.key.id()}}/following">{{profile_user.following|length}} people</a></p>
+                    <p class="text-center">Followed by <a href="/profile/{{profile_user.key.id()}}/followers">{{profile_user.follower|length}} people</a></p>
+                    <p>
+                    {%if not my_profile and user and user.key.id() and profile_user and profile_user.key.id() %}
+                    <form action="/follow" class="pull-right" style="display:inline:block; margin-right:10px;" method="post">
+                        <input type="hidden" name="follow_user_id" value="{{profile_user.key.id()}}">
+                        {%if followed%}
+                            <input type="submit" value="Unfollow" name="follow" class="btn btn-primary ">
+                        {%else%}
+                            <input type="submit" value="Follow" name="follow" class="btn btn-primary ">
+                        {%endif%}
+                    </form>
+                    <div class="clearfix"></div>
+                    {%endif%}
+                    </p>
+                </div>
+            </div>
+            <ul style="list-style:none">
+                <li><a href="/" class="pull-right">Feed</a><div class="clearfix"></div></li>
+                <li><a href="/profile/{{user.key.id()}}" class="pull-right">My Profile</a><div class="clearfix"></div></li>
+            </ul>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="col-xs-5">
+            <div class="add_post" style="
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-bottom: 10px;
+">
+                <form action="{{upload_url}}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <textarea name="caption" id="" class="form-control"
+                                  placeholder="Whats on your mind..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <input type="file" name="image" class="form-control-file" accept=".png,.jpg" required>
+                            </div>
+                            <div class="col-xs-6"><input type="submit" name="submit" value="Post"
+                                                         class="btn btn-primary pull-right"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="show-posts">
+                <!--    loop posts -->
+
+
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <img src="/static/default-user-image.png"
+                                     style="display:inline-block;height:30px; width:30px;" class="img-circle">
+                                <h5 style="display:inline-block"><a href="">{{post.user.get().email}}</a></h5>
+                                <p>
+                                    {{post.caption}}
+                                </p>
+                            </div>
+                            <img src="/image/{{post.key.urlsafe()}}" style="height: 200px; width: 100%; display: block;">
+                            <div class="caption">
+                                <form action="/comment" method="POST">
+                                    <input type="hidden" name="post_id" value="{{post.key.id()}}">
+                                    <div class="form-group">
+                                        <input type="text" name="comment" placeholder="Write a comment" class="form-control" required>
+                                    </div>
+                                </form>
+                            </div>
+                            {%for comment in post.comments %}
+                            <div class="media">
+                                <div class="media-left">
+                                    <a href="#"> <img alt="64x64" class="media-object img-circle"
+                                                      data-src="holder.js/64x64"
+                                                      src="/static/default-user-image.png"
+                                                      data-holder-rendered="true"
+                                                      style="width: 30px; height: 30px;max-width:none;"> </a>
+                                </div>
+                                <div class="media-body">
+                                    <p>
+                                        <a href="#">{{comment.user.get().email}}</a>
+                                        {{comment.comment}}
+                                    </p>
+
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
